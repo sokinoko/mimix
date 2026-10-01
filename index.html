@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="독서 행동강령">
+<title>독서 행동 강령</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" id="mf">
+<style>
+:root{--ink:#1b1f24;--sub:#6b7280;--line:#e3e5e8;--wash:#f6f7f8;--ac:#4f7a5a;--acl:#edf3ee;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:'IBM Plex Sans KR',system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-text-size-adjust:100%}
+body{max-width:1100px;margin:0 auto;padding:env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 32px)}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+button:focus-visible,select:focus-visible,[contenteditable]:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+h1{font-size:18px;font-weight:700;margin:18px 0 2px;letter-spacing:-.01em}
+.sub{color:var(--sub);font-size:13px;margin:0 0 14px}
+.tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{padding:8px 0 10px;font-size:15px;font-weight:500;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab.on{color:var(--ac);border-color:var(--ac);font-weight:700}
+.seg{display:inline-flex;background:var(--wash);border-radius:10px;padding:3px;margin:14px 0}
+.seg button{padding:7px 14px;border-radius:8px;font-size:14px;color:var(--sub);font-weight:500}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 0 0 1px var(--line)}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.bar select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:0;flex:1;max-width:260px}
+.nb{width:36px;height:36px;border:1px solid var(--line);border-radius:8px;font-size:18px}
+.nb:disabled{opacity:.35;cursor:default}
+.stat{color:var(--sub);font-size:13px;margin-left:auto}
+.pri{background:var(--ac);color:#fff;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600}
+.ghost{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--sub);white-space:nowrap}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%}
+.wk{table-layout:fixed;min-width:560px}
+.wk th,.wk td{border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.wk th:last-child,.wk td:last-child{border-right:0}
+.wk tbody tr:last-child>*{border-bottom:0}
+.wk thead th{background:var(--wash);text-align:left;vertical-align:top;padding:10px 10px 11px;font-weight:400;min-width:104px}
+.wk thead th b{display:block;font-size:13px;font-weight:700;color:var(--ac);margin-bottom:3px}
+.wk thead th span{display:block;font-size:12px;line-height:1.45;color:var(--sub);word-break:keep-all}
+.wk .d{width:96px;min-width:96px;position:sticky;left:0;background:#fff;z-index:1;text-align:left;padding:8px 10px;font-weight:500;font-size:14px}
+.wk thead .d{background:var(--wash);color:var(--sub);font-size:12px;font-weight:500}
+.wk .d small{display:block;font-size:11px;color:var(--sub);font-weight:400}
+.wk tr.today .d{box-shadow:inset 3px 0 0 var(--ac)}
+.sat{color:#3b5bdb}.sun{color:#c2255c}
+.wk td{text-align:center;height:48px;padding:0}
+.ck{width:26px;height:26px;border:1.5px solid #c9cdd3;border-radius:7px;font-size:15px;font-weight:700;color:#fff;line-height:1;vertical-align:middle}
+.ck[aria-pressed=true]{background:var(--ac);border-color:var(--ac)}
+.empty{padding:36px 16px;text-align:center;color:var(--sub);font-size:14px;border:1px dashed var(--line);border-radius:10px}
+.empty .pri{margin-top:12px}
+/* 표 */
+.cap{color:var(--sub);font-size:13px;margin:0 0 10px}
+.ref{table-layout:fixed;min-width:520px}
+.ref th,.ref td{border:1px solid #b9bec6;padding:14px 12px;font-size:14px;line-height:1.55;text-align:center;word-break:keep-all}
+.ref th{background:#eceef1;font-weight:600;padding:10px}
+.ref td:last-child{font-weight:600;color:var(--ac)}
+.ref em{display:block;font-style:normal;font-size:12px;color:#c2255c;margin-top:2px}
+.notes{margin:18px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.7}
+.notes b{display:inline-block;width:28px;color:var(--ac)}
+/* 질문 관리 */
+h2{font-size:15px;font-weight:700;margin:22px 0 4px}
+.hint{color:var(--sub);font-size:13px;margin:0 0 10px}
+ul.ql{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px}
+.qi{display:flex;gap:10px;align-items:flex-start;padding:12px;border-bottom:1px solid var(--line)}
+.qi:last-child{border-bottom:0}
+.mv{display:flex;flex-direction:column;gap:2px}
+.mv button{width:26px;height:22px;border-radius:5px;color:var(--sub);font-size:13px}
+.mv button:hover{background:var(--wash)}
+.qt{flex:1;min-width:0}
+.qt b{display:block;font-size:13px;color:var(--ac);font-weight:700;margin-bottom:2px}
+.qt span{display:block;font-size:14px;line-height:1.5;word-break:keep-all}
+.qt small{display:block;color:var(--sub);font-size:11.5px;margin-top:3px}
+.qt [contenteditable]{border-radius:4px}
+.acts{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.add{background:var(--acl);color:var(--ac);font-weight:600;border-radius:8px;padding:6px 12px;font-size:13px;white-space:nowrap}
+.del{font-size:12px;color:var(--sub);text-align:center}
+details{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:0 12px}
+summary{padding:12px 0;font-size:14px;font-weight:600;cursor:pointer}
+.nf{display:grid;gap:8px;padding:0 0 12px}
+.nf input,.nf textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+.nf textarea{min-height:70px;resize:vertical}
+.ptitle{display:none}
+@media print{
+@page{size:A4 landscape;margin:10mm}
+body{padding:0;max-width:none}
+.tabs,.seg,.bar,h1,.sub,#v-ref,#v-q{display:none!important}
+.ptitle{display:block;font-size:15px;font-weight:700;margin:0 0 8px;color:var(--ac)}
+.wrap{overflow:visible;border:0}
+.wk{min-width:0}.wk .d{position:static}
+.wk thead th{padding:6px;min-width:0}.wk thead th b{font-size:11px}.wk thead th span{font-size:9.5px}
+.wk td{height:11mm}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ck{pointer-events:none}
+}
+</style>
+</head>
+<body>
+<h1>독서 행동 강령</h1>
+<p class="sub" id="sub"></p>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="seg" id="seg">
+  <button data-v="week">주간 체크</button>
+  <button data-v="ref">행동 강령 표</button>
+  <button data-v="q">질문 관리</button>
+</div>
+<section id="v-week">
+  <div class="bar">
+    <button class="nb" id="prev" aria-label="이전 주">‹</button>
+    <select id="wsel" aria-label="주차 선택"></select>
+    <button class="nb" id="next" aria-label="다음 주">›</button>
+    <span class="stat" id="stat"></span>
+    <button class="pri" id="pdf">PDF 저장</button>
+  </div>
+  <h2 class="ptitle" id="ptitle"></h2>
+  <div id="weekbody"></div>
+</section>
+<section id="v-ref" hidden></section>
+<section id="v-q" hidden></section>
+
+<script>
+const TABS=[
+ {k:'h',n:'인문',ac:'#4f7a5a',acl:'#edf3ee'},
+ {k:'l',n:'법·사회',ac:'#3a4a96',acl:'#ecedf7'},
+ {k:'s',n:'과학',ac:'#1f7f86',acl:'#e8f3f4'},
+ {k:'t',n:'기술',ac:'#4d5d73',acl:'#eceff2'}];
+
+/* 가져갈 것 정리본(7/27~10/1) 중복 병합 → [id, 키워드, 질문, 출처 날짜, 처음 넣어둘 제재] */
+const POOL=[
+['p1','논증 구조','전제–가정–결론으로 논증 구조를 파악했는가?','7/27','h'],
+['p2','관점 파악','발문에서 관점을 파악하고, 관점이 둘이면 공통점·차이점을 짚었는가?','7/27 · 8/20','h'],
+['p3','글의 목적','글의 목적(화제)을 파악하며 읽었는가? 중심 문장과 글 구조를 확인했는가?','7/30 · 9/8 · 9/22','h'],
+['p4','정리 문장','"이처럼", "따라서" 같은 정리된 문장을 읽었는가?','7/30','h'],
+['p5','동어치환','동어치환을 연결 짓고, 예시와 붙여 읽었는가?','8/20','h'],
+['p6','이때 문장','"이때"가 있는 문장은 문제로 나온다. 강하게 독해했는가?','8/20 · 9/16','hl'],
+['p7','이유 묻는 문제','"왜냐하면 ( )이기 때문이다"로 직접 써봤는가? (뒤섞은 말, 단락에 나온 말은 X)','7/27 · 9/1','h'],
+['p8','정보 가공','텍스트 그대로 보지 않고 머릿속에서 가공했는가? (포함관계, 그래프, 괄호 표시)','7/30 · 9/16 · 9/30','lst'],
+['p9','조건 누락','주장한 문장의 경중을 가리고, 조건·장점 누락을 앞뒤 문장과 확인했는가?','7/30 · 9/1 · 9/8','h'],
+['p10','단락 연결','단락과 단락을 합쳐 유기적으로 연결해 읽었는가?','8/26 · 9/8','l'],
+['p11','정의 줄여 읽기','정의는 주제·목적·원칙으로 줄여 읽고, 개념이 많으면 수형도를 그렸는가?','8/26 · 8/28','l'],
+['p12','원칙–예외','원칙과 예외를 구분하며 읽고, 예외사항을 문제로 대비했는가?','8/26 · 8/28 · 9/1','l'],
+['p13','법의 목적','법의 목적을 유의 깊게 읽었는가?','8/26','l'],
+['p14','쌍방 관계','사회 지문에서 쌍방 관계를 보고 주체를 파악했는가?','8/26','l'],
+['p15','병렬 구조','병렬 구조와 구성 요소의 역할을 파악해 괄호로 표시했는가?','8/28 · 9/1 · 9/30 · 10/1','t'],
+['p16','비례 관계','비례 관계는 글자로 한 번 더 표시하고, 나눈 값은 분모·분자로 봤는가?','9/16','s'],
+['p17','과정·선후관계','과정은 화살표로 표시하고, 서술 순서와 의미 순서가 다른지(선후관계 바꾸기) 확인했는가?','9/22 · 9/25','t'],
+['p18','문제의 원인','P→S 구조에서 문제의 원인을 파악하고 잘못된 원인/해결책을 걸러냈는가?','9/22 · 9/25','st'],
+['p19','비교 범주','비교 범주와 주체/객체를 확인해 오독을 막았는가?','9/21 · 9/25','st'],
+['p20','같은 키워드','같은 키워드가 다른 문단에 나오면 차이점을 파악했는가? (반복 키워드는 잔상 독해 주의)','9/22 · 10/1','st'],
+['p21','오답 키워드','틀린 전제에 수식어를 붙인 선지, 맞는 말 속 오답 키워드 하나를 경계했는가?','9/8','hl'],
+['p22','선지 쪼개기','선지를 끝까지 끊어 읽었는가?','9/30','lst'],
+['p23','<보기> 연계','<보기>는 지문과 달라진 포인트를 보고 타 단락과 연계해 읽었는가?','9/16','lst'],
+['p24','문제 상황','문제 상황과 해결 문장을 강하게 독해하고 화제를 계속 생각했는가?','9/30','st']
+];
+
+/* 내가 만든 제재별 표 그대로: [평가원의 지문 구성, rowspan, 출제자의 낚시질, 번호메모, 나의 행동강령] */
+const REF={
+h:{src:'인문학 씹어먹기',rows:[
+ ['주장 ← 주장 반박',1,'지문에 나온 말 + 틀린 말','4, 11번','발문에서 관점 파악'],
+ ['2명 이상의 철학자<br>비교 / 대조',2,'자의적 이원화','2, 3번 · 8번','공통점도 파악'],
+ [null,0,'잔상 독해 + 조건 수락','7번 · 8번','‘~가 아니라’ 앞도 챙기기']],
+ notes:['중심 문장 읽기 (~라고 주장한다 / ~와 달리)','동어치환, 예시와 붙여 읽기','정리된 문장 읽기']},
+l:{src:'2027 민정쌤과 씹어먹는 기출 I · p.42',rows:[
+ ['구체적 상황 제시',1,'주체 바꾸기','','쌍방 관계 파악'],
+ ['정의',1,'틀린 단어 삽입','','선지 끊어 읽기'],
+ ['원칙 – 예외',1,'묶어서 제시','','‘단, 다만, ~나’ 주의']]},
+s:{src:'2027 민정쌤과 씹어먹는 기출 I · p.72',rows:[
+ ['P → S',1,'잘못된 원인 / 해결책','','문제의 원인 파악'],
+ ['개념 분화',1,'묶어서 독해','','주체 / 객체 확인'],
+ ['비교 / 대조',1,'묶어 읽기','','끊어 읽기']]},
+t:{src:'2027 민정쌤과 씹어먹는 기출 I · p.104',rows:[
+ ['P → S',1,'잘못된 청킹 (묶어 독해)','','문제의 원인 파악<br>선지 끊어 읽기'],
+ ['구성 요소의 역할<br>(병렬구조)',1,'비슷한 워딩 + 틀린 단어 삽입<br>잔상 독해','6, 9, 10번','흔적 잘 남기기 + 더블 체크'],
+ ['작동 순서',2,'방향, 선후관계 바꾸기<br>(내용 재구성)','','정보 가공'],
+ [null,0,'비교 범주 오독','3, 8번 · 10번','주체 / 객체 주의']]}
+};
+
+const START=new Date(2026,9,2),WEEKS=7,KEY='dokseo-v2',DN=['일','월','화','수','목','금','토'];
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.pool)S={pool:POOL.map(p=>({id:p[0],t:p[1],x:p[2],d:p[3]})),on:{},chk:{},tab:'h',view:'week'};
+TABS.forEach(t=>{if(!S.on[t.k])S.on[t.k]=POOL.filter(p=>p[4].includes(t.k)).map(p=>p[0])});
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=d=>`${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
+const addD=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const dkey=d=>`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+const byId=id=>S.pool.find(p=>p.id===id);
+const T=()=>TABS.find(t=>t.k===S.tab);
+const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+let wk=Math.min(WEEKS-1,Math.max(0,Math.floor((today-START)/864e5/7)));
+const wr=w=>[addD(START,w*7),addD(START,w*7+6)];
+
+function renderWeek(){
+  const t=T(),ids=S.on[t.k].filter(byId),[a,b]=wr(wk);
+  $('wsel').innerHTML=Array.from({length:WEEKS},(_,w)=>{const[x,y]=wr(w);return `<option value="${w}" ${w===wk?'selected':''}>${w+1}주차 · ${fmt(x)} – ${fmt(y)}</option>`}).join('');
+  $('prev').disabled=wk===0;$('next').disabled=wk===WEEKS-1;
+  $('ptitle').textContent=`${t.n} 제재 행동 강령 · ${wk+1}주차 (${fmt(a)} – ${fmt(b)})`;
+  if(!ids.length){
+    $('weekbody').innerHTML=`<div class="empty">이 제재에 넣은 질문이 없어요.<br><button class="pri" data-v="q">질문 고르러 가기</button></div>`;$('stat').textContent='';return;
+  }
+  let done=0,h=`<div class="wrap"><table class="wk"><thead><tr><th class="d">날짜</th>`;
+  ids.forEach(id=>{const p=byId(id);h+=`<th><b>${esc(p.t)}</b><span>${esc(p.x)}</span></th>`});
+  h+=`</tr></thead><tbody>`;
+  for(let i=0;i<7;i++){
+    const d=addD(a,i),w=d.getDay(),k=dkey(d);
+    let n=0,cells='';
+    ids.forEach(id=>{const on=S.chk[`${t.k}|${id}|${k}`]?1:0;n+=on;cells+=`<td><button class="ck" aria-pressed="${!!on}" data-c="${id}|${k}" aria-label="${esc(byId(id).t)} ${fmt(d)}">${on?'✓':''}</button></td>`});
+    done+=n;
+    h+=`<tr class="${+d===+today?'today':''}"><th class="d ${w===6?'sat':w===0?'sun':''}">${fmt(d)} (${DN[w]})<small>${n}/${ids.length}</small></th>${cells}</tr>`;
+  }
+  $('weekbody').innerHTML=h+`</tbody></table></div>`;
+  $('stat').textContent=`이번 주 ${done}/${ids.length*7}`;
+}
+
+function renderRef(){
+  const r=REF[S.tab];
+  let h=`<p class="cap">${r.src}</p><div class="wrap"><table class="ref"><thead><tr><th>평가원의 지문 구성</th><th>출제자의 낚시질</th><th>나의 행동강령</th></tr></thead><tbody>`;
+  r.rows.forEach(([a,sp,b,bn,c])=>{
+    h+=`<tr>${a!==null?`<td rowspan="${sp}">${a}</td>`:''}<td>${b}${bn?`<em>${bn}</em>`:''}</td><td>${c}</td></tr>`;
+  });
+  h+=`</tbody></table></div>`;
+  if(r.notes)h+=`<ul class="notes">${r.notes.map((n,i)=>`<li><b>0${i+1}</b>${n}</li>`).join('')}</ul>`;
+  $('v-ref').innerHTML=h;
+}
+
+function renderQ(){
+  const t=T(),on=S.on[t.k].filter(byId),off=S.pool.filter(p=>!on.includes(p.id));
+  const row=(p,inc,i)=>`<li class="qi">${inc?`<div class="mv"><button data-a="up" data-id="${p.id}" aria-label="위로" ${i===0?'disabled':''}>↑</button><button data-a="dn" data-id="${p.id}" aria-label="아래로" ${i===on.length-1?'disabled':''}>↓</button></div>`:''}
+  <div class="qt"><b contenteditable="true" spellcheck="false" data-f="t" data-id="${p.id}">${esc(p.t)}</b><span contenteditable="true" spellcheck="false" data-f="x" data-id="${p.id}">${esc(p.x)}</span>${p.d?`<small>필기 ${esc(p.d)}</small>`:''}</div>
+  <div class="acts">${inc?`<button class="ghost" data-a="off" data-id="${p.id}">빼기</button>`:`<button class="add" data-a="on" data-id="${p.id}">+ 넣기</button><button class="del" data-a="del" data-id="${p.id}">삭제</button>`}</div></li>`;
+  $('v-q').innerHTML=`
+  <h2>${t.n} 체크리스트 · ${on.length}개</h2>
+  <p class="hint">글자를 눌러 바로 고칠 수 있어요. 순서는 ↑↓로 바꿔요.</p>
+  ${on.length?`<ul class="ql">${on.map((id,i)=>row(byId(id),1,i)).join('')}</ul>`:`<div class="empty">아래에서 질문을 넣어 보세요.</div>`}
+  <h2>필기에서 가져온 질문 · ${off.length}개</h2>
+  <p class="hint">7/27~10/1 필기를 겹치는 내용끼리 합친 질문이에요. 넣기를 누르면 이 제재 체크리스트에 들어가요.</p>
+  ${off.length?`<ul class="ql">${off.map(p=>row(p,0)).join('')}</ul>`:`<div class="empty">모두 넣었어요.</div>`}
+  <details><summary>+ 새 질문 직접 만들기</summary><div class="nf">
+   <input id="nt" placeholder="키워드 (예: 비례 관계)" maxlength="20"><textarea id="nx" placeholder="질문 (예: 비례 관계를 글자로 한 번 더 표시했는가?)"></textarea>
+   <button class="pri" data-a="new">추가하고 ${t.n}에 넣기</button></div></details>`;
+}
+
+function render(){
+  const t=T(),r=document.documentElement.style;
+  r.setProperty('--ac',t.ac);r.setProperty('--acl',t.acl);
+  $('sub').textContent='2026.10.02 – 11.19 · 제재별 읽기 습관 점검';
+  $('tabs').innerHTML=TABS.map(x=>`<button class="tab ${x.k===S.tab?'on':''}" role="tab" data-k="${x.k}">${x.n}</button>`).join('');
+  [...$('seg').children].forEach(b=>b.classList.toggle('on',b.dataset.v===S.view));
+  ['week','ref','q'].forEach(v=>$('v-'+v).hidden=v!==S.view);
+  if(S.view==='week')renderWeek();else if(S.view==='ref')renderRef();else renderQ();
+  save();
+}
+
+document.addEventListener('click',e=>{
+  const g=e.target.closest('button');if(!g)return;
+  const d=g.dataset,on=S.on[S.tab];
+  if(d.k){S.tab=d.k;return render()}
+  if(d.v){S.view=d.v;return render()}
+  if(d.c){const k=S.tab+'|'+d.c;if(S.chk[k]){delete S.chk[k];g.setAttribute('aria-pressed','false');g.textContent=''}else{S.chk[k]=1;g.setAttribute('aria-pressed','true');g.textContent='✓'}save();return renderWeekStats()}
+  if(g.id==='prev'){wk--;return render()}
+  if(g.id==='next'){wk++;return render()}
+  if(g.id==='pdf')return window.print();
+  const i=on.indexOf(d.id);
+  if(d.a==='on'){on.push(d.id)}
+  else if(d.a==='off'){on.splice(i,1)}
+  else if(d.a==='up'&&i>0){[on[i-1],on[i]]=[on[i],on[i-1]]}
+  else if(d.a==='dn'&&i<on.length-1){[on[i+1],on[i]]=[on[i],on[i+1]]}
+  else if(d.a==='del'){if(!confirm('이 질문을 모음에서 완전히 지울까요? 다른 제재 체크리스트에서도 사라져요.'))return;S.pool=S.pool.filter(p=>p.id!==d.id);TABS.forEach(t=>S.on[t.k]=S.on[t.k].filter(x=>x!==d.id))}
+  else if(d.a==='new'){const t=$('nt').value.trim(),x=$('nx').value.trim();if(!t||!x){alert('키워드와 질문을 모두 적어 주세요.');return}const id='c'+Math.random().toString(36).slice(2,8);S.pool.push({id,t,x,d:''});on.push(id)}
+  else return;
+  render();
+});
+function renderWeekStats(){const t=T(),ids=S.on[t.k].filter(byId),[a]=wr(wk);let done=0;
+  for(let i=0;i<7;i++){const k=dkey(addD(a,i));let n=0;ids.forEach(id=>{if(S.chk[`${t.k}|${id}|${k}`])n++});done+=n;
+    const th=document.querySelectorAll('.wk tbody tr')[i];if(th)th.querySelector('small').textContent=`${n}/${ids.length}`}
+  $('stat').textContent=`이번 주 ${done}/${ids.length*7}`}
+$('wsel').onchange=e=>{wk=+e.target.value;render()};
+$('v-q').addEventListener('focusout',e=>{
+  const f=e.target.dataset&&e.target.dataset.f;if(!f)return;
+  const p=byId(e.target.dataset.id),v=e.target.innerText.replace(/\s+/g,' ').trim();
+  if(v)p[f]=v;else e.target.textContent=p[f];save();
+});
+$('v-q').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.isContentEditable){e.preventDefault();e.target.blur()}});
+try{
+  const mf={name:'독서 행동 강령',short_name:'독서 행동강령',start_url:'./',display:'standalone',background_color:'#ffffff',theme_color:'#ffffff'};
+  $('mf').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));
+}catch(e){}
+render();
+</script>
+</body>
+</html>
