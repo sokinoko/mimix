@@ -82,6 +82,12 @@ table{border-collapse:separate;border-spacing:0;width:100%}
 .ref th{background:var(--head);font-weight:600;padding:10px}
 .ref td:last-child{font-weight:600;color:var(--ac)}
 .ref em{display:block;font-style:normal;font-size:12px;color:#b4233c;margin-top:2px}
+.ref.ls{min-width:0}
+.ref.ls td{text-align:left}
+.ref.ls td:first-child{width:52px;text-align:center;color:var(--sub);font-weight:500;background:var(--head)}
+.ref.ls td:last-child{color:var(--ink);font-weight:500}
+.ref.ls em{display:inline-block;margin:0 0 0 8px;font-weight:600;color:var(--ac)}
+.lh{margin:18px 0 8px;font-size:14px}
 .notes{margin:18px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.7}
 .notes b{display:inline-block;width:28px;color:var(--ac)}
 /* 질문 관리 */
@@ -148,7 +154,7 @@ body{padding:0;max-width:none}
 <body>
 <div class="eyebrow"><span>READING HABIT CHECKLIST</span><i></i><span class="rng" id="rng"></span><span class="wpill" id="wpill"></span></div>
 <div class="title">
-  <div><h1>독서 행동 강령</h1><p class="sub" id="sub"></p></div>
+  <div><h1 id="h1">독서 행동 강령</h1><p class="sub" id="sub"></p></div>
   <div class="tagl">작은 실천이 모여,<br>더 나은 하루를 만듭니다.</div>
 </div>
 <div class="nav">
@@ -184,7 +190,49 @@ const TABS=[
  {k:'h',n:'인문',ac:'#8b1e1e',acl:'#f1e4e1'},
  {k:'l',n:'법·사회',ac:'#1f3a6e',acl:'#e3e8f2'},
  {k:'s',n:'과학',ac:'#0f5f63',acl:'#dfeeed'},
- {k:'t',n:'기술',ac:'#3d4a5c',acl:'#e5e8ec'}];
+ {k:'t',n:'기술',ac:'#3d4a5c',acl:'#e5e8ec'},
+ {k:'c',n:'독서 공통',ac:'#4b3f8a',acl:'#e7e4f2',sub:'독서 지문 · <보기>'},
+ {k:'p',n:'운문',ac:'#8a4b12',acl:'#f3e6d8',g:'문학'},
+ {k:'n',n:'산문',ac:'#2f5d34',acl:'#e0ece1',g:'문학'}];
+
+/* 체크리스트 원문 (2027 파이란 Prologue p.6·p.8) — [id, 키워드, 질문, 원문, 제재] */
+const BOOK=[
+['r1','서술어 필수 요소','문장이 길면 서술어의 필수 요소를 확인했는가?','문장이 길면 서술어의 필수 요소를 확인하자.','c'],
+['r2','동어치환','다른 형태, 같은 의미인 동어치환에 유의했는가?','다른 형태, 같은 의미인 동어치환에 유의하자.','c'],
+['r3','내용 전환','한 단락 안에서 내용이 전환될 때 끊어 읽었는가?','한 단락 내 내용이 전환될 때 끊어 읽자.','c'],
+['r4','\'이때\'','\'이때\'가 나오면 주의해서 읽었는가?','\'이때\'가 나오면 주의하자.','c'],
+['r5','대조·상반','대조, 상반은 잘못 짝짓기에 신경 썼는가?','대조, 상반은 잘못 짝짓기에 신경 쓰자.','c'],
+['r6','병렬식 구성','병렬식 구성이 예고되면 스캐닝부터 했는가?','병렬식 구성이 예고되면 스캐닝부터 하자.','c'],
+['r7','공·차 지문','공·차 지문에서 공통점에도 유념했는가?','공·차 지문은 공통점에도 유념하자.','c'],
+['r8','정의 여러 개','정의가 여러 개 나오면 밑줄보다 주어에 괄호를 쳤는가?','정의가 여러 개 나오면 밑줄보다 주어에 괄호치자.','c'],
+['r9','부정 표시','부정될 때는 밑줄보다 명사에 x를 쳤는가?','부정될 때는 밑줄보다 명사에 x 치자.','c'],
+['r10','회귀적 독해','내용이 이해가 안 되면 회귀적으로 독해했는가?','내용이 이해가 안 되면 회귀적으로 독해하자.','c'],
+['b1','<보기> 먼저','선지보다 <보기>를 먼저 읽었는가?','선지보다 <보기>를 먼저 읽는다.','c'],
+['b2','<보기> 동어치환','<보기> 내용과 지문 내용을 동어치환하며 읽었는가?','<보기> 내용과 지문 내용을 동어치환 하며 읽는다.','c'],
+['b3','달라진 조건','지문과 달라진 조건, 상황을 파악했는가?','지문과 달라진 조건, 상황을 파악한다.','c'],
+['b4','주관식 먼저','주관식으로 먼저 <보기> 문제에 대한 답을 내렸는가?','주관식으로 먼저 <보기> 문제에 대한 답을 내린다.','c'],
+['b5','선지로 내려가기','그다음 선지로 내려가 답을 찾았는가?','선지로 내려가 답을 찾는다.','c'],
+['v1','제목부터','제목부터 확인했는가?','제목부터 확인하자.','p'],
+['v2','제목–1연','제목과 1연의 관련성을 파악했는가?','제목과 1연의 관련성을 파악하자.','p'],
+['v3','제목 든 구절','제목이 들어간 구절을 확인했는가?','제목이 들어간 구절을 확인하자.','p'],
+['v4','서술어로 정서','서술어를 통해 상황, 정서를 파악했는가?','서술어를 통해 상황, 정서를 파악하자.','p'],
+['v5','자연물','자연물이 나오면 상반 / 동일시를 파악했는가?','자연물이 나오면 상반 / 동일시를 파악하자.','p'],
+['v6','부정적 자연물','[판단 기준] 부정적 상황의 자연물은 동일시될 확률이 높다 — 이걸로 판단했는가?','부정적 상황의 자연물은 동일시될 확률이 높다.','p'],
+['v7','부연·인과·상반','앞뒤 내용의 부연, 인과, 상반 관계 등을 파악하며 독해했는가?','앞 뒤 내용의 부연, 인과, 상반 관계 등을 파악하며 독해하자.','p'],
+['v8','낯선 운문','낯선 운문 작품이 나오면 <보기>를 먼저 확인했는가?','낯선 운문 작품이 나오면 <보기>를 먼저 확인한다.','p'],
+['v9','유사한 구조','[판단 기준] 문장 구조가 유사하면 의미가 유사할 확률이 높다 — 이걸로 판단했는가?','문장 구조가 유사하면 의미가 유사할 확률이 높다.','p'],
+['v10','이원화 금지','명사 자체만 보고 긍정, 부정으로 이원화하지 않았는가?','명사 자체만 보고 긍정, 부정으로 이원화하지 말자.','p'],
+['n1','제목부터','제목부터 확인했는가?','제목부터 확인하자.','n'],
+['n2','제목–첫 장면','제목과 첫 장면의 관련성을 파악했는가?','제목과 첫 장면의 관련성을 파악하자.','n'],
+['n3','장면 나누기','읽으면서 변화가 생길 때 장면을 나눴는가? (3~4개)','읽으면서 변화가 생길 때 장면을 나누자. (3~4개)','n'],
+['n4','인물 관계','장면별로 인물 관계를 파악했는가?','장면별로 인물 관계를 파악하자.','n'],
+['n5','장면 연결고리','앞 장면과 뒷 장면의 연결고리를 파악하며 읽었는가?','앞 장면과 뒷 장면의 연결고리를 파악하며 글을 읽자.','n'],
+['n6','막히면 처음으로','글을 읽다 막히면 맨 앞으로 돌아갔는가?','글을 읽다 막히면 맨 앞으로 돌아가자.','n'],
+['n7','낯선 산문','낯선 산문 작품이 나오면 <보기>를 먼저 확인했는가?','낯선 산문 작품이 나오면 <보기>를 먼저 확인한다.','n'],
+['n8','제목 속 인물','[판단 기준·고전소설] 제목에 있는 사람이 착한 사람일 확률이 높다 — 이걸로 판단했는가?','제목에 있는 사람이 착한 사람일 확률이 높다. (고전소설)','n'],
+['n9','우화 소설','우화 소설은 풍자하는 내용이므로 <보기>부터 확인했는가?','우화 소설은 풍자하는 내용이므로, <보기>부터 확인하자.','n'],
+['n10','빠진 주체·객체','고전소설을 읽을 때 빠져 있는 주체와 객체를 확인했는가?','고전소설을 읽을 때는 빠져 있는 주체와 객체를 확인하자.','n']];
+const BOOK_PG={c:'p.6',p:'p.8',n:'p.8'};
 
 /* 가져갈 것 정리본(7/27~10/1) 중복 병합 → [id, 키워드, 질문, 출처 날짜, 처음 넣어둘 제재] */
 const POOL=[
@@ -211,7 +259,8 @@ const POOL=[
 ['p21','오답 키워드','틀린 전제에 수식어를 붙인 선지, 맞는 말 속 오답 키워드 하나를 경계했는가?','9/8','hl'],
 ['p22','선지 쪼개기','선지를 끝까지 끊어 읽었는가?','9/30','lst'],
 ['p23','<보기> 연계','<보기>는 지문과 달라진 포인트를 보고 타 단락과 연계해 읽었는가?','9/16','lst'],
-['p24','문제 상황','문제 상황과 해결 문장을 강하게 독해하고 화제를 계속 생각했는가?','9/30','st']
+['p24','문제 상황','문제 상황과 해결 문장을 강하게 독해하고 화제를 계속 생각했는가?','9/30','st'],
+...BOOK.map(b=>[b[0],b[1],b[2],'체크리스트 '+BOOK_PG[b[4]],b[4]])
 ];
 
 /* 내가 만든 제재별 표 그대로: [평가원의 지문 구성, rowspan, 출제자의 낚시질, 번호메모, 나의 행동강령] */
@@ -233,7 +282,10 @@ t:{src:'2027 민정쌤과 씹어먹는 기출 I · p.104',rows:[
  ['P → S',1,'잘못된 청킹 (묶어 독해)','','문제의 원인 파악<br>선지 끊어 읽기'],
  ['구성 요소의 역할<br>(병렬구조)',1,'비슷한 워딩 + 틀린 단어 삽입<br>잔상 독해','6, 9, 10번','흔적 잘 남기기 + 더블 체크'],
  ['작동 순서',2,'방향, 선후관계 바꾸기<br>(내용 재구성)','','정보 가공'],
- [null,0,'비교 범주 오독','3, 8번 · 10번','주체 / 객체 주의']]}
+  [null,0,'비교 범주 오독','3, 8번 · 10번','주체 / 객체 주의']]},
+c:{src:'2027 김민정 파이란 · 독서 체크리스트 p.6',list:[['독서 지문 독해 행동 강령','r'],['<보기> 독해 행동 강령','b']]},
+p:{src:'2027 김민정 파이란 · 문학 체크리스트 p.8',list:[['운문 지문 독해 행동 강령','v']]},
+n:{src:'2027 김민정 파이란 · 문학 체크리스트 p.8',list:[['산문 지문 독해 행동 강령','n']]}
 };
 
 /* 필기 원문(날짜별) — 사진 속 손글씨를 옮긴 것 */
@@ -261,11 +313,20 @@ p20:`9/22 — 같은 키워드가 타 문단에도 나올 시, 차이점 파악�
 p21:`9/8 — 틀린 전제에 +수식어로 꾸민 것 → 주의 / 맞는 말 여러 개에 오답 키워드 하나`,
 p22:`9/30 — 선지 끝까지 읽기 (선지 쪼개기)`,
 p23:`9/16 — <보기> 문제, 타 단락과 연계`,
+...Object.fromEntries(BOOK.map(b=>[b[0],`체크리스트 원문 (${BOOK_PG[b[4]]}) — ${b[3]}`])),
 p24:`9/30 — 3문단 내용전환 한 문장 → 문제 구현, 문제 상황 해결 문장 강하게 독해 / 기술·과학 → 화제 계속 생각`
 };
 const START=new Date(2026,9,2),WEEKS=7,KEY='dokseo-v2',EN=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+function byIdRaw(id){return S.pool.find(p=>p.id===id)}
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-if(!S||!S.pool)S={pool:POOL.map(p=>({id:p[0],t:p[1],x:p[2],d:p[3],o:OR[p[0]]||''})),on:{},chk:{},tab:'h',view:'week'};
+const mk=p=>({id:p[0],t:p[1],x:p[2],d:p[3],o:OR[p[0]]||''});
+if(!S||!S.pool)S={pool:POOL.map(mk),on:{},chk:{},tab:'h',view:'week',seen:POOL.map(p=>p[0])};
+/* 예전 저장본: 새로 생긴 질문(체크리스트)을 모음에 넣고, 이미 있는 제재에도 끼운다. 한 번 넣은 뒤 지운 건 다시 안 넣는다 */
+if(!S.seen)S.seen=POOL.filter(p=>/^p\d+$/.test(p[0])).map(p=>p[0]);
+POOL.forEach(p=>{if(S.seen.includes(p[0]))return;S.seen.push(p[0]);
+  if(!byIdRaw(p[0]))S.pool.push(mk(p));
+  TABS.forEach(t=>{if(S.on[t.k]&&p[4].includes(t.k)&&!S.on[t.k].includes(p[0]))S.on[t.k].push(p[0])})});
+if(!TABS.some(t=>t.k===S.tab))S.tab='h';
 TABS.forEach(t=>{if(!S.on[t.k])S.on[t.k]=POOL.filter(p=>p[4].includes(t.k)).map(p=>p[0])});
 /* 이전 저장본 이전: 원문 채우고 p7 문구 정리 */
 S.pool.forEach(p=>{if(p.o===undefined)p.o=OR[p.id]||''});
@@ -311,6 +372,14 @@ function updProg(){
 
 function renderRef(){
   const r=REF[S.tab];
+  if(r.list){
+    let h=`<p class="cap">${r.src}</p>`;
+    r.list.forEach(([ttl,pre])=>{
+      const it=BOOK.filter(b=>b[0].replace(/\d+$/,'')===pre);
+      h+=`<h2 class="lh">[${esc(ttl)}]</h2><div class="wrap"><table class="ref ls"><tbody>${it.map((b,i)=>`<tr><td>${i+1}</td><td>${esc(b[3])}${/확률이 높다/.test(b[3])?'<em>판단 기준</em>':''}</td></tr>`).join('')}</tbody></table></div>`;
+    });
+    return $('v-ref').innerHTML=h;
+  }
   let h=`<p class="cap">${r.src}</p><div class="wrap"><table class="ref"><thead><tr><th>평가원의 지문 구성</th><th>출제자의 낚시질</th><th>나의 행동강령</th></tr></thead><tbody>`;
   r.rows.forEach(([a,sp,b,bn,c])=>{
     h+=`<tr>${a!==null?`<td rowspan="${sp}">${a}</td>`:''}<td>${b}${bn?`<em>${bn}</em>`:''}</td><td>${c}</td></tr>`;
@@ -323,7 +392,7 @@ function renderRef(){
 function renderQ(){
   const t=T(),on=S.on[t.k].filter(byId),off=S.pool.filter(p=>!on.includes(p.id));
   const row=(p,inc,i)=>`<li class="qi">${inc?`<div class="mv"><button data-a="up" data-id="${p.id}" aria-label="위로" ${i===0?'disabled':''}>↑</button><button data-a="dn" data-id="${p.id}" aria-label="아래로" ${i===on.length-1?'disabled':''}>↓</button></div>`:''}
-  <div class="qt"><b contenteditable="true" spellcheck="false" data-f="t" data-id="${p.id}">${esc(p.t)}</b><span contenteditable="true" spellcheck="false" data-f="x" data-id="${p.id}">${esc(p.x)}</span>${p.d?`<small>필기 ${esc(p.d)}</small>`:''}</div>
+  <div class="qt"><b contenteditable="true" spellcheck="false" data-f="t" data-id="${p.id}">${esc(p.t)}</b><span contenteditable="true" spellcheck="false" data-f="x" data-id="${p.id}">${esc(p.x)}</span>${p.d?`<small>${/^\d/.test(p.d)?'필기 ':''}${esc(p.d)}</small>`:''}</div>
   <div class="acts"><button class="ghost" data-o="${p.id}">필기 보기</button>${inc?`<button class="ghost" data-a="off" data-id="${p.id}">빼기</button>`:`<button class="add" data-a="on" data-id="${p.id}">+ 넣기</button><button class="del" data-a="del" data-id="${p.id}">삭제</button>`}</div></li>`;
   $('v-q').innerHTML=`
   <h2>${t.n} 체크리스트 · ${on.length}개</h2>
@@ -342,7 +411,8 @@ function render(){
   r.setProperty('--ac',t.ac);r.setProperty('--acl',t.acl);
   $('rng').textContent=`${a.getFullYear()}.${fmt(a)} – ${fmt(b)}`;
   $('wpill').textContent=`WEEK ${wk+1}`;
-  $('sub').textContent=`${t.n} 제재 · 오늘도, 조금 더 나아가는 중.`;
+  $('sub').textContent=`${t.sub||t.n+' 제재'} · 오늘도, 조금 더 나아가는 중.`;
+  $('h1').textContent=`${t.g||'독서'} 행동 강령`;
   $('tabs').innerHTML=TABS.map(x=>`<button class="tab ${x.k===S.tab?'on':''}" role="tab" data-k="${x.k}">${x.n}</button>`).join('');
   [...$('seg').children].forEach(x=>x.classList.toggle('on',x.dataset.v===S.view));
   ['week','ref','q'].forEach(v=>$('v-'+v).hidden=v!==S.view);
